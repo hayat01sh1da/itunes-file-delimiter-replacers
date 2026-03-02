@@ -1,5 +1,3 @@
-# Security Policy
-
 ## Supported Versions
 
 - Only the latest code on `master` receives security updates.
@@ -20,5 +18,7 @@
 
 ## Reporting a Vulnerability
 
-Report vulnerabilities privately through GitHub’s **Security → Report a vulnerability** workflow or email `security@project.org` with the exact CLI parameters (`original_extension`, `target_extension`, etc.), sample files, and environment details.  
-Expect acknowledgement within **3 business days** and status updates at least every **7 business days**.
+Please report issues privately via **GitHub Security Advisory** (preferred) — open through the repository’s **Security → Report a vulnerability** workflow.
+
+Acknowledgement occurs and status updates follow as soon as possible.  
+After remediation we publish guidance alongside required dependency updates.
