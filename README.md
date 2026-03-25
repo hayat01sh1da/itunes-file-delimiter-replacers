@@ -4,7 +4,7 @@
 
 ## 1. Common Environment
 
-- WSL(Ubuntu 24.4.3 LTS)
+- WSL (Ubuntu 25.10)
 
 ## 2. READMEs
 
@@ -23,9 +23,9 @@ The format of filepath is `Artist/Album/1-01 Title.m4a`, for example.
 `\d{1}\-` prefix represents the disc number.  
 The script aims to convert the path as follows, for example.
 
-|Before |After |
-|:-|:-|
-|Artist/Album/1-01 Title.m4a |Artist/Album/Disc1/01_Title.m4a |
+| Before                      | After                           |
+| :-------------------------- | :------------------------------ |
+| Artist/Album/1-01 Title.m4a | Artist/Album/Disc1/01_Title.m4a |
 
 It requires use to input the following 3 parameters to replace the original delimiter with something else you prefer.
 
