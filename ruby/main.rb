@@ -1,3 +1,5 @@
+# rbs_inline: enabled
+
 require_relative './src/application'
 
 puts 'Provide the target extension of files whose delimiter you would like to make changes to:'
