@@ -9,10 +9,10 @@ sys.path.append('./src')
 from application import Application, InvalidModeError
 
 class TestApplication(unittest.TestCase):
-    def setUp(self):
-        self.base_dir = os.path.join('.', 'test', 'Artist')
-        self.pycaches = glob.glob(os.path.join('.', '**', '__pycache__'), recursive = True)
-        paths         = (
+    def setUp(self) -> None:
+        self.base_dir: str       = os.path.join('.', 'test', 'Artist')
+        self.pycaches: list[str] = glob.glob(os.path.join('.', '**', '__pycache__'), recursive = True)
+        paths: tuple[str, ...]   = (
             os.path.join(self.base_dir, 'Album1', '1-01 Title.m4a'),
             os.path.join(self.base_dir, 'Album1', '2-01 Title.m4a'),
             os.path.join(self.base_dir, 'Album2', '01 Title.m4a'),
@@ -26,19 +26,19 @@ class TestApplication(unittest.TestCase):
             with open(path, 'w', encoding='utf-8') as file_handle:
                 file_handle.write('')
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         if os.path.exists(self.base_dir):
             shutil.rmtree(self.base_dir)
         for pycache in self.pycaches:
             if os.path.exists(pycache):
                 shutil.rmtree(pycache)
 
-    def test_invalid_mode(self):
+    def test_invalid_mode(self) -> None:
         with self.assertRaises(InvalidModeError) as cm:
             Application(mode = 'a').run()
         self.assertEqual('a is invalid mode. Provide either `d`(default) or `e`.', str(cm.exception))
 
-    def test_dry_run_keeps_original_files(self):
+    def test_dry_run_keeps_original_files(self) -> None:
         Application().run()
         self.assertEqual(
             [
@@ -51,7 +51,7 @@ class TestApplication(unittest.TestCase):
             sorted(glob.glob(os.path.join(self.base_dir, '**', '*.*'), recursive=True))
         )
 
-    def test_execution_mode_restructures_files(self):
+    def test_execution_mode_restructures_files(self) -> None:
         Application(mode = 'e').run()
 
         self.assertEqual(
@@ -65,7 +65,7 @@ class TestApplication(unittest.TestCase):
             sorted(glob.glob(os.path.join(self.base_dir, '**', '*.*'), recursive=True))
         )
 
-    def test_execution_mode_with_custom_delimiter(self):
+    def test_execution_mode_with_custom_delimiter(self) -> None:
         Application(delimiter = '-', mode = 'e').run()
 
         self.assertEqual(
