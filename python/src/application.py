@@ -8,22 +8,22 @@ class InvalidModeError(Exception):
     pass
 
 class Application:
-    def __init__(self, extension = '.m4a', delimiter = '_', mode = 'd'):
-        self.extension           = extension
-        self.delimiter           = delimiter
-        self.mode                = mode
-        self.paths               = glob.glob(os.path.join('.', '**', f'*{extension or ''}'), recursive = True)
-        self.exec_mode           = self.__exec_mode__()
-        self.env                 = inspect.stack()[1].filename.split('/')[-2]
-        self.file_conversion_map = self.__file_conversion_map__()
+    def __init__(self, extension: str = '.m4a', delimiter: str = '_', mode: str = 'd') -> None:
+        self.extension: str                = extension
+        self.delimiter: str                = delimiter
+        self.mode: str                     = mode
+        self.paths: list[str]              = glob.glob(os.path.join('.', '**', f'*{extension or ''}'), recursive = True)
+        self.exec_mode: str                = self.__exec_mode__()
+        self.env: str                      = inspect.stack()[1].filename.split('/')[-2]
+        self.file_conversion_map: dict[str, str] = self.__file_conversion_map__()
 
-    def run(self):
+    def run(self) -> None:
         self.__validate__()
         self.__replace__()
 
     # private
 
-    def __validate__(self):
+    def __validate__(self) -> None:
         """Validate the provided mode is either 'd' (dry-run) or 'e' (execution).
 
         Args:
@@ -38,7 +38,7 @@ class Application:
             case _:
                 raise InvalidModeError(f'{self.mode} is invalid mode. Provide either `d`(default) or `e`.')
 
-    def __replace__(self):
+    def __replace__(self) -> None:
         """Replace delimiters in file paths.
         
         Returns:
@@ -69,7 +69,7 @@ class Application:
 
     # private
 
-    def __file_conversion_map__(self):
+    def __file_conversion_map__(self) -> dict[str, str]:
         """Generate a mapping of original paths to new paths with updated delimiters.
         
         Returns:
@@ -81,7 +81,7 @@ class Application:
 
         return file_conversion_map
 
-    def __after__(self, path):
+    def __after__(self, path: str) -> str:
         """Transform a file path by replacing delimiters according to the pattern.
         
         Returns:
@@ -107,7 +107,7 @@ class Application:
 
         return '/'.join(elements)
 
-    def __exec_mode__(self):
+    def __exec_mode__(self) -> str:
         """Determine the execution mode string for output messages.
         
         Returns:
@@ -115,7 +115,7 @@ class Application:
         """
         return 'EXECUTION' if self.mode == 'e' else 'DRY RUN'
 
-    def __is_test_env__(self):
+    def __is_test_env__(self) -> bool:
         """Check if running in a test environment.
         
         Returns:
@@ -123,7 +123,7 @@ class Application:
         """
         return self.env == 'test'
 
-    def __output__(self, message):
+    def __output__(self, message: str) -> None:
         """Output a message if not running in the test environment.
 
         Args:
