@@ -29,7 +29,7 @@ class Application
   # @rbs return: void
   def replace
     output "Target extension is `#{extension}`"
-    output "========== [#{exec_mode}] No #{pattern} Remains ==========" and return if paths.empty?
+    output "========== [#{exec_mode}] No #{extension} Remains ==========" and return if paths.empty?
     output "========== [#{exec_mode}] Total File Count to Clean: #{paths.length} =========="
     output "========== [#{exec_mode}] The delimiters of those files will be replaced with `#{delimiter}` =========="
     output "========== [#{exec_mode}] Start! =========="
