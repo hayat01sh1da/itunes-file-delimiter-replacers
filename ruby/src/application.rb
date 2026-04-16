@@ -63,7 +63,7 @@ class Application
 
   # @rbs return: Hash[String, String]
   def file_conversion_map
-    @file_conversion_map ||= paths.map.with_object({}) { |path, hash|
+    @file_conversion_map ||= paths.map.with_object(Hash.new) { |path, hash|
       hash[path] = after(path)
     }
   end
