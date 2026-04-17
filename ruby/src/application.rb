@@ -1,14 +1,24 @@
+# rbs_inline: enabled
+
 require 'fileutils'
 
 class Application
   class InvalidModeError < StandardError; end
 
+  # @rbs extension: String
+  # @rbs delimiter: String
+  # @rbs mode: String
+  # @rbs return: void
   def self.run(extension: '.m4a', delimiter: '_', mode: 'd')
     instance = new(extension:, delimiter:, mode:)
     instance.validate_mode!
     instance.replace
   end
 
+  # @rbs extension: String
+  # @rbs delimiter: String
+  # @rbs mode: String
+  # @rbs return: void
   def initialize(extension: '.m4a', delimiter: '_', mode: 'd')
     @paths     = Dir[File.join('.', '**', "*#{extension}")]
     @extension = extension
@@ -16,10 +26,10 @@ class Application
     @mode      = mode
   end
 
-  # @return [void]
+  # @rbs return: void
   def replace
     output "Target extension is `#{extension}`"
-    output "========== [#{exec_mode}] No #{pattern} Remains ==========" and return if paths.empty?
+    output "========== [#{exec_mode}] No #{extension} Remains ==========" and return if paths.empty?
     output "========== [#{exec_mode}] Total File Count to Clean: #{paths.length} =========="
     output "========== [#{exec_mode}] The delimiters of those files will be replaced with `#{delimiter}` =========="
     output "========== [#{exec_mode}] Start! =========="
@@ -37,7 +47,7 @@ class Application
     output "========== [#{exec_mode}] Total Target File Count: #{paths.length} =========="
   end
 
-  # @return [nil] or [InvalidModeError]
+  # @rbs return: void
   def validate_mode!
     case mode
     when 'd', 'e'
@@ -51,14 +61,16 @@ class Application
 
   attr_reader :paths, :extension, :delimiter, :mode
 
-  # @return [Hash{String => String}]
-  def file_conversion_map
-    @file_conversion_map ||= paths.map.with_object({}) { |path, hash|
+  # @rbs bash: Hash[String, String]
+  # @rbs return: Hash[String, String]
+  def file_conversion_map(hash = {})
+    @file_conversion_map ||= paths.map.with_object(hash) { |path, hash|
       hash[path] = after(path)
     }
   end
 
-  # @return [String]
+  # @rbs path: String
+  # @rbs return: String
   def after(path)
     elements     = path.split('/')
     old_filename = elements.last
@@ -75,17 +87,18 @@ class Application
     elements.join('/')
   end
 
-  # @return [String]
+  # @rbs return: String
   def exec_mode
     @exec_mode ||= mode == 'e' ? 'EXECUTION' : 'DRY RUN'
   end
 
-  # @return [Boolean]
+  # @rbs return: bool
   def test_env?
     caller[-1].split('/').last.match?(/minitest\.rb/)
   end
 
-  # @return [void]
+  # @rbs message: String
+  # @rbs return: void
   def output(message)
     puts message unless test_env?
   end
