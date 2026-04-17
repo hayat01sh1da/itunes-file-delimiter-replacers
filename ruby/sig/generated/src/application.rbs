@@ -32,8 +32,9 @@ class Application
 
   attr_reader mode: untyped
 
+  # @rbs bash: Hash[String, String]
   # @rbs return: Hash[String, String]
-  def file_conversion_map: () -> Hash[String, String]
+  def file_conversion_map: (?untyped hash) -> Hash[String, String]
 
   # @rbs path: String
   # @rbs return: String
