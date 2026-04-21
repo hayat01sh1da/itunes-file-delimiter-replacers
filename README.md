@@ -1,6 +1,6 @@
-[![Actions Status: Python](https://github.com/hayat01sh1da/itunes-file-delimiter-replacer/workflows/Python/badge.svg)](https://github.com/hayat01sh1da/itunes-file-delimiter-replacer/actions?query=workflow%3A%22Python%22)
-[![Actions Status: Ruby](https://github.com/hayat01sh1da/itunes-file-delimiter-replacer/workflows/Ruby/badge.svg)](https://github.com/hayat01sh1da/itunes-file-delimiter-replacer/actions?query=workflow%3A%22Ruby%22)
-[![Actions Status: CodeQL](https://github.com/hayat01sh1da/itunes-file-delimiter-replacer/workflows/CodeQL/badge.svg)](https://github.com/hayat01sh1da/itunes-file-delimiter-replacer/actions?query=workflow%3A%22CodeQL%22)
+[![Actions Status: Python](https://github.com/hayat01sh1da/itunes-file-delimiter-replacers/workflows/Python/badge.svg)](https://github.com/hayat01sh1da/itunes-file-delimiter-replacers/actions?query=workflow%3A%22Python%22)
+[![Actions Status: Ruby](https://github.com/hayat01sh1da/itunes-file-delimiter-replacers/workflows/Ruby/badge.svg)](https://github.com/hayat01sh1da/itunes-file-delimiter-replacers/actions?query=workflow%3A%22Ruby%22)
+[![Actions Status: CodeQL](https://github.com/hayat01sh1da/itunes-file-delimiter-replacers/workflows/CodeQL/badge.svg)](https://github.com/hayat01sh1da/itunes-file-delimiter-replacers/actions?query=workflow%3A%22CodeQL%22)
 
 ## 1. Common Environment
 
