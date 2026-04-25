@@ -1,0 +1,52 @@
+# Generated from src/application.rb with RBS::Inline
+
+class Application
+  class InvalidModeError < StandardError
+  end
+
+  # @rbs extension: String
+  # @rbs delimiter: String
+  # @rbs mode: String
+  # @rbs return: void
+  def self.run: (?extension: String, ?delimiter: String, ?mode: String) -> void
+
+  # @rbs extension: String
+  # @rbs delimiter: String
+  # @rbs mode: String
+  # @rbs return: void
+  def initialize: (?extension: String, ?delimiter: String, ?mode: String) -> void
+
+  # @rbs return: void
+  def replace: () -> void
+
+  # @rbs return: void
+  def validate_mode!: () -> void
+
+  private
+
+  attr_reader paths: untyped
+
+  attr_reader extension: untyped
+
+  attr_reader delimiter: untyped
+
+  attr_reader mode: untyped
+
+  # @rbs bash: Hash[String, String]
+  # @rbs return: Hash[String, String]
+  def file_conversion_map: (?untyped hash) -> Hash[String, String]
+
+  # @rbs path: String
+  # @rbs return: String
+  def after: (String path) -> String
+
+  # @rbs return: String
+  def exec_mode: () -> String
+
+  # @rbs return: bool
+  def test_env?: () -> bool
+
+  # @rbs message: String
+  # @rbs return: void
+  def output: (String message) -> void
+end
