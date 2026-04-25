@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-D = Steep::Diagnostic
-
 target :app do
   ignore 'main.rb'
   ignore 'exec'
@@ -11,7 +9,7 @@ target :app do
 
   library 'fileutils'
 
-  configure_code_diagnostics(D::Ruby.default)
+  configure_code_diagnostics(Steep::Diagnostic::Ruby.default)
 end
 
 target :test do
@@ -24,5 +22,5 @@ target :test do
   library 'fileutils'
   library 'minitest'
 
-  configure_code_diagnostics(D::Ruby.default)
+  configure_code_diagnostics(Steep::Diagnostic::Ruby.default)
 end
