@@ -31,3 +31,41 @@ Target extension is `.m4a`
 ========== [EXECUTION] Done! ==========
 ========== [EXECUTION] Total Target File Count: 4 ==========
 ```
+
+## 4. Unit Test
+
+```command
+$ ruby test/application_test.rb 
+Run options: --seed 32643
+
+# Running:
+
+....
+
+Finished in 0.538823s, 7.4236 runs/s, 9.2795 assertions/s.
+
+4 runs, 5 assertions, 0 failures, 0 errors, 0 skips
+```
+
+## 5. Static Code Analysis
+
+```command
+$ rubocop
+Inspecting 5 files.....
+
+
+5 files inspected, no offenses detected
+```
+
+## 6. Type Checks
+
+```command
+$ rbs-inline --output sig/generated/ .
+🎉 Generated 3 RBS files under sig/generated
+$ steep check
+# Type checking files:
+
+......
+
+No type error detected. 🫖
+```
