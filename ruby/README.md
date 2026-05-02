@@ -35,16 +35,16 @@ Target extension is `.m4a`
 ## 4. Unit Test
 
 ```command
-$ ruby test/application_test.rb 
-Run options: --seed 32643
+$ rake
+Run options: --seed 65057
 
 # Running:
 
-....
+.....
 
-Finished in 0.538823s, 7.4236 runs/s, 9.2795 assertions/s.
+Finished in 0.203643s, 24.5528 runs/s, 39.2845 assertions/s.
 
-4 runs, 5 assertions, 0 failures, 0 errors, 0 skips
+5 runs, 8 assertions, 0 failures, 0 errors, 0 skips
 ```
 
 ## 5. Static Code Analysis
