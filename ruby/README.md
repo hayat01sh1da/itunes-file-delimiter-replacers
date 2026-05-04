@@ -12,7 +12,6 @@ $ bundle lock --add-checksums
 ## 3. Execution
 
 ```command
-$ cd ./ruby
 $ ruby main.rb 
 Provide the target extension of files whose delimiter you would like to make changes to:
 .m4a
