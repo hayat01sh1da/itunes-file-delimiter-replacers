@@ -1,3 +1,4 @@
+from application import Application, InvalidModeError
 import glob
 import os
 import shutil
@@ -6,13 +7,13 @@ import unittest
 
 sys.path.append('./src')
 
-from application import Application, InvalidModeError
 
 class TestApplication(unittest.TestCase):
     def setUp(self) -> None:
-        self.base_dir: str       = os.path.join('.', 'test', 'Artist')
-        self.pycaches: list[str] = glob.glob(os.path.join('.', '**', '__pycache__'), recursive = True)
-        paths: tuple[str, ...]   = (
+        self.base_dir: str = os.path.join('.', 'test', 'Artist')
+        self.pycaches: list[str] = glob.glob(
+            os.path.join('.', '**', '__pycache__'), recursive=True)
+        paths: tuple[str, ...] = (
             os.path.join(self.base_dir, 'Album1', '1-01 Title.m4a'),
             os.path.join(self.base_dir, 'Album1', '2-01 Title.m4a'),
             os.path.join(self.base_dir, 'Album2', '01 Title.m4a'),
@@ -35,8 +36,10 @@ class TestApplication(unittest.TestCase):
 
     def test_invalid_mode(self) -> None:
         with self.assertRaises(InvalidModeError) as cm:
-            Application(mode = 'a').run()
-        self.assertEqual('a is invalid mode. Provide either `d`(default) or `e`.', str(cm.exception))
+            Application(mode='a').run()
+        self.assertEqual(
+            'a is invalid mode. Provide either `d`(default) or `e`.', str(
+                cm.exception))
 
     def test_dry_run_keeps_original_files(self) -> None:
         Application().run()
@@ -46,13 +49,17 @@ class TestApplication(unittest.TestCase):
                 './test/Artist/Album1/2-01 Title.m4a',
                 './test/Artist/Album2/01 Title.m4a',
                 './test/Artist/Album2/02 Title.m4a',
-                './test/Artist/Album3/01 Title.mp3'
-            ],
-            sorted(glob.glob(os.path.join(self.base_dir, '**', '*.*'), recursive=True))
-        )
+                './test/Artist/Album3/01 Title.mp3'],
+            sorted(
+                glob.glob(
+                    os.path.join(
+                        self.base_dir,
+                        '**',
+                        '*.*'),
+                    recursive=True)))
 
     def test_execution_mode_restructures_files(self) -> None:
-        Application(mode = 'e').run()
+        Application(mode='e').run()
 
         self.assertEqual(
             [
@@ -60,13 +67,17 @@ class TestApplication(unittest.TestCase):
                 './test/Artist/Album1/Disc2/01_Title.m4a',
                 './test/Artist/Album2/01_Title.m4a',
                 './test/Artist/Album2/02_Title.m4a',
-                './test/Artist/Album3/01 Title.mp3'
-            ],
-            sorted(glob.glob(os.path.join(self.base_dir, '**', '*.*'), recursive=True))
-        )
+                './test/Artist/Album3/01 Title.mp3'],
+            sorted(
+                glob.glob(
+                    os.path.join(
+                        self.base_dir,
+                        '**',
+                        '*.*'),
+                    recursive=True)))
 
     def test_execution_mode_with_custom_delimiter(self) -> None:
-        Application(delimiter = '-', mode = 'e').run()
+        Application(delimiter='-', mode='e').run()
 
         self.assertEqual(
             [
@@ -74,10 +85,15 @@ class TestApplication(unittest.TestCase):
                 './test/Artist/Album1/Disc2/01-Title.m4a',
                 './test/Artist/Album2/01-Title.m4a',
                 './test/Artist/Album2/02-Title.m4a',
-                './test/Artist/Album3/01 Title.mp3'
-            ],
-            sorted(glob.glob(os.path.join(self.base_dir, '**', '*.*'), recursive=True))
-        )
+                './test/Artist/Album3/01 Title.mp3'],
+            sorted(
+                glob.glob(
+                    os.path.join(
+                        self.base_dir,
+                        '**',
+                        '*.*'),
+                    recursive=True)))
+
 
 if __name__ == '__main__':
     unittest.main()
