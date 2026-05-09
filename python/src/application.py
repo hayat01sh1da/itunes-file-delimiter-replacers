@@ -4,18 +4,26 @@ import os
 import re
 import shutil
 
+
 class InvalidModeError(Exception):
     pass
 
+
 class Application:
-    def __init__(self, extension: str = '.m4a', delimiter: str = '_', mode: str = 'd') -> None:
-        self.extension: str                = extension
-        self.delimiter: str                = delimiter
-        self.mode: str                     = mode
-        self.paths: list[str]              = glob.glob(os.path.join('.', '**', f'*{extension or ''}'), recursive = True)
-        self.exec_mode: str                = self.__exec_mode__()
-        self.env: str                      = inspect.stack()[1].filename.split('/')[-2]
-        self.file_conversion_map: dict[str, str] = self.__file_conversion_map__()
+    def __init__(
+            self,
+            extension: str = '.m4a',
+            delimiter: str = '_',
+            mode: str = 'd') -> None:
+        self.extension: str = extension
+        self.delimiter: str = delimiter
+        self.mode: str = mode
+        self.paths: list[str] = glob.glob(os.path.join(
+            '.', '**', f'*{extension or ''}'), recursive=True)
+        self.exec_mode: str = self.__exec_mode__()
+        self.env: str = inspect.stack()[1].filename.split('/')[-2]
+        self.file_conversion_map: dict[str,
+                                       str] = self.__file_conversion_map__()
 
     def run(self) -> None:
         self.__validate__()
@@ -36,42 +44,51 @@ class Application:
             case 'd' | 'e':
                 return
             case _:
-                raise InvalidModeError(f'{self.mode} is invalid mode. Provide either `d`(default) or `e`.')
+                raise InvalidModeError(
+                    f'{self.mode} is invalid mode. Provide either `d`(default) or `e`.')
 
     def __replace__(self) -> None:
         """Replace delimiters in file paths.
-        
+
         Returns:
             None
         """
         self.__output__(f'Target extension is `{self.extension}`')
 
         if not self.paths:
-            self.__output__(f'========== [{self.exec_mode}] No `{self.extension}` files found ==========')
+            self.__output__(
+                f'========== [{
+                    self.exec_mode}] No `{
+                    self.extension}` files found ==========')
             return
 
-        self.__output__(f'========== [{self.exec_mode}] Total File Count to Clean: {len(self.paths)} ==========')
-        self.__output__(f'========== [{self.exec_mode}] The delimiters of those files will be replaced with `{self.delimiter}` ==========')
+        self.__output__(
+            f'========== [{self.exec_mode}] Total File Count to Clean: {len(self.paths)} ==========')
+        self.__output__(
+            f'========== [{
+                self.exec_mode}] The delimiters of those files will be replaced with `{
+                self.delimiter}` ==========')
         self.__output__(f'========== [{self.exec_mode}] Start! ==========')
 
         for before, after in self.file_conversion_map.items():
             self.__output__(
-                f'========== [{self.exec_mode}] Replacing the delimiter: `{before}` => `{after}` =========='
-            )
+                f'========== [{
+                    self.exec_mode}] Replacing the delimiter: `{before}` => `{after}` ==========')
             if self.mode == 'e':
                 if re.search(r'Disc\d{1}/', after):
-                    os.makedirs(os.path.dirname(after), exist_ok = True)
+                    os.makedirs(os.path.dirname(after), exist_ok=True)
                 if before != after:
                     shutil.move(before, after)
 
         self.__output__(f'========== [{self.exec_mode}] Done! ==========')
-        self.__output__(f'========== [{self.exec_mode}] Total Target File Count: {len(self.paths)} ==========')
+        self.__output__(
+            f'========== [{self.exec_mode}] Total Target File Count: {len(self.paths)} ==========')
 
     # private
 
     def __file_conversion_map__(self) -> dict[str, str]:
         """Generate a mapping of original paths to new paths with updated delimiters.
-        
+
         Returns:
             dict: A dictionary mapping original file paths to new file paths.
         """
@@ -83,11 +100,11 @@ class Application:
 
     def __after__(self, path: str) -> str:
         """Transform a file path by replacing delimiters according to the pattern.
-        
+
         Returns:
             str: The transformed file path.
         """
-        elements     = path.split('/')
+        elements = path.split('/')
         old_filename = elements[-1]
 
         if re.match(r'^\d-', old_filename):
@@ -109,7 +126,7 @@ class Application:
 
     def __exec_mode__(self) -> str:
         """Determine the execution mode string for output messages.
-        
+
         Returns:
             str: Either 'EXECUTION' or 'DRY RUN'.
         """
@@ -117,7 +134,7 @@ class Application:
 
     def __is_test_env__(self) -> bool:
         """Check if running in a test environment.
-        
+
         Returns:
             bool: True if in test environment, False otherwise.
         """
