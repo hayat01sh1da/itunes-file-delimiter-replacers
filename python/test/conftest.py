@@ -2,6 +2,7 @@ import glob
 import os
 import shutil
 import sys
+from collections.abc import Iterator
 
 sys.path.append('./src')
 
@@ -10,7 +11,7 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def _cleanup_pycaches():
+def _cleanup_pycaches() -> Iterator[None]:
     before = set(glob.glob(os.path.join('.', '**', '__pycache__'), recursive=True))
     yield
     for pycache in before:
@@ -19,7 +20,7 @@ def _cleanup_pycaches():
 
 
 @pytest.fixture
-def base_dir():
+def base_dir() -> Iterator[str]:
     directory = os.path.join('.', 'test', 'Artist')
     paths = (
         os.path.join(directory, 'Album1', '1-01 Title.m4a'),
