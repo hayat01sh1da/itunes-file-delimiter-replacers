@@ -7,13 +7,20 @@ from application import Application, InvalidModeError
 
 
 def _list_files(base_dir: str) -> list[str]:
-    return sorted(glob.glob(os.path.join(base_dir, '**', '*.*'), recursive=True))
+    return sorted(
+        glob.glob(
+            os.path.join(
+                base_dir,
+                '**',
+                '*.*'),
+            recursive=True))
 
 
 def test_invalid_mode(base_dir: str) -> None:
     with pytest.raises(InvalidModeError) as excinfo:
         Application(mode='a').run()
-    assert str(excinfo.value) == 'a is invalid mode. Provide either `d`(default) or `e`.'
+    assert str(
+        excinfo.value) == 'a is invalid mode. Provide either `d`(default) or `e`.'
 
 
 def test_dry_run_keeps_original_files(base_dir: str) -> None:
