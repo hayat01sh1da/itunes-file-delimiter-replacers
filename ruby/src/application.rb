@@ -28,23 +28,11 @@ class Application
   # @rbs return: void
   def replace
     output "Target extension is `#{extension}`"
-    output "========== [#{exec_mode}] No #{extension} Remains ==========" and return if paths.empty?
+    return announce_empty if paths.empty?
 
-    output "========== [#{exec_mode}] Total File Count to Clean: #{paths.length} =========="
-    output "========== [#{exec_mode}] The delimiters of those files will be replaced with `#{delimiter}` =========="
-    output "========== [#{exec_mode}] Start! =========="
-
-    file_conversion_map.each do |before, after|
-      output "========== [#{exec_mode}] Replacing the delimiter: `#{before}` => `#{after}` =========="
-
-      if mode == 'e'
-        FileUtils.mkdir_p(File.dirname(after)) if after.match?(%r{Disc\d{1}/})
-        FileUtils.mv(before, after) if before != after
-      end
-    end
-
-    output "========== [#{exec_mode}] Done! =========="
-    output "========== [#{exec_mode}] Total Target File Count: #{paths.length} =========="
+    announce_start
+    apply_renames
+    announce_finish
   end
 
   # @rbs return: void
@@ -61,11 +49,45 @@ class Application
 
   attr_reader :paths, :extension, :delimiter, :mode
 
+  # @rbs return: void
+  def announce_empty
+    output "========== [#{exec_mode}] No #{extension} Remains =========="
+  end
+
+  # @rbs return: void
+  def announce_start
+    output "========== [#{exec_mode}] Total File Count to Clean: #{paths.length} =========="
+    output "========== [#{exec_mode}] The delimiters of those files will be replaced with `#{delimiter}` =========="
+    output "========== [#{exec_mode}] Start! =========="
+  end
+
+  # @rbs return: void
+  def announce_finish
+    output "========== [#{exec_mode}] Done! =========="
+    output "========== [#{exec_mode}] Total Target File Count: #{paths.length} =========="
+  end
+
+  # @rbs return: void
+  def apply_renames
+    file_conversion_map.each do |before, after|
+      output "========== [#{exec_mode}] Replacing the delimiter: `#{before}` => `#{after}` =========="
+      rename(before, after) if mode == 'e'
+    end
+  end
+
+  # @rbs before: String
+  # @rbs after: String
+  # @rbs return: void
+  def rename(before, after)
+    FileUtils.mkdir_p(File.dirname(after)) if after.match?(%r{Disc\d{1}/})
+    FileUtils.mv(before, after) if before != after
+  end
+
   # @rbs bash: Hash[String, String]
   # @rbs return: Hash[String, String]
   def file_conversion_map(hash = {})
-    @file_conversion_map ||= paths.map.with_object(hash) do |path, hash|
-      hash[path] = after(path)
+    @file_conversion_map ||= paths.map.with_object(hash) do |path, acc|
+      acc[path] = after(path)
     end
   end
 
@@ -73,18 +95,18 @@ class Application
   # @rbs return: String
   def after(path)
     elements     = path.split('/')
-    old_filename = elements.last
-
-    new_filename = if old_filename.match?(/^\d{1}-/)
-                     old_filename
-                       .gsub(/^(?<disc_number>\d{1})-/, 'Disc\k<disc_number>/')
-                       .gsub(%r{(?<disc_number>Disc\d{1})/(?<track_number>\d{2})\s}, "\\k<disc_number>/\\k<track_number>#{delimiter}")
-                   else
-                     old_filename.gsub(/(?<track_number>\d{2})\s/, "\\k<track_number>#{delimiter}")
-                   end
-
-    elements[-1] = new_filename
+    elements[-1] = rewrite_filename(elements.last)
     elements.join('/')
+  end
+
+  # @rbs filename: String
+  # @rbs return: String
+  def rewrite_filename(filename)
+    return filename.gsub(/(?<track_number>\d{2})\s/, "\\k<track_number>#{delimiter}") unless filename.match?(/^\d{1}-/)
+
+    filename
+      .gsub(/^(?<disc_number>\d{1})-/, 'Disc\k<disc_number>/')
+      .gsub(%r{(?<disc_number>Disc\d{1})/(?<track_number>\d{2})\s}, "\\k<disc_number>/\\k<track_number>#{delimiter}")
   end
 
   # @rbs return: String
