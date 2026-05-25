@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
+# Walks the current directory looking for media files with the given extension
+# and rewrites their filenames so the space delimiter becomes a configurable
+# character (and `N-` disc prefixes become `DiscN/` subdirectories).
 class Application
   class InvalidModeError < StandardError; end
 
