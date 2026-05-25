@@ -1,5 +1,8 @@
 # Generated from src/application.rb with RBS::Inline
 
+# Walks the current directory looking for media files with the given extension
+# and rewrites their filenames so the space delimiter becomes a configurable
+# character (and `N-` disc prefixes become `DiscN/` subdirectories).
 class Application
   class InvalidModeError < StandardError
   end
@@ -32,6 +35,23 @@ class Application
 
   attr_reader mode: untyped
 
+  # @rbs return: void
+  def announce_empty: () -> void
+
+  # @rbs return: void
+  def announce_start: () -> void
+
+  # @rbs return: void
+  def announce_finish: () -> void
+
+  # @rbs return: void
+  def apply_renames: () -> void
+
+  # @rbs before: String
+  # @rbs after: String
+  # @rbs return: void
+  def rename: (String before, String after) -> void
+
   # @rbs bash: Hash[String, String]
   # @rbs return: Hash[String, String]
   def file_conversion_map: (?untyped hash) -> Hash[String, String]
@@ -39,6 +59,10 @@ class Application
   # @rbs path: String
   # @rbs return: String
   def after: (String path) -> String
+
+  # @rbs filename: String
+  # @rbs return: String
+  def rewrite_filename: (String filename) -> String
 
   # @rbs return: String
   def exec_mode: () -> String
