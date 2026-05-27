@@ -33,7 +33,7 @@ def run_itunes_file_delimiter_replacer(c: Context) -> None:
         if value:
             params[key] = value
 
-    Application(**params).run()
+    Application.run(**params)
 
 
 @task(default=True)

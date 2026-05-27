@@ -5,149 +5,125 @@ import re
 import shutil
 
 
-class InvalidModeError(Exception):
-    pass
-
-
 class Application:
-    def __init__(
-            self,
-            extension: str = '.m4a',
-            delimiter: str = '_',
+    """Walks the current directory looking for media files with the given
+    extension and rewrites their filenames so the space delimiter becomes a
+    configurable character (and `N-` disc prefixes become `DiscN/`
+    subdirectories)."""
+
+    class InvalidModeError(Exception):
+        pass
+
+    @classmethod
+    def run(cls, extension: str = '.m4a', delimiter: str = '_',
             mode: str = 'd') -> None:
-        self.extension: str = extension
-        self.delimiter: str = delimiter
-        self.mode: str = mode
-        self.paths: list[str] = glob.glob(os.path.join(
-            '.', '**', f'*{extension or ''}'), recursive=True)
-        self.exec_mode: str = self.__exec_mode__()
-        self.env: str = inspect.stack()[1].filename.split('/')[-2]
-        self.file_conversion_map: dict[str,
-                                       str] = self.__file_conversion_map__()
+        instance = cls(extension=extension, delimiter=delimiter, mode=mode)
+        instance.validate_mode()
+        instance.replace()
 
-    def run(self) -> None:
-        self.__validate__()
-        self.__replace__()
+    def __init__(self, extension: str = '.m4a', delimiter: str = '_',
+                 mode: str = 'd') -> None:
+        self._extension = extension
+        self._delimiter = delimiter
+        self._mode = mode
+        self._paths = glob.glob(
+            os.path.join('.', '**', f'*{extension}'), recursive=True)
 
-    # private
-
-    def __validate__(self) -> None:
-        """Validate the provided mode is either 'd' (dry-run) or 'e' (execution).
-
-        Args:
-            mode: The mode to validate.
-
-        Raises:
-            InvalidModeError: If mode is not 'd' or 'e'.
-        """
-        match self.mode:
+    def validate_mode(self) -> None:
+        match self._mode:
             case 'd' | 'e':
                 return
             case _:
-                raise InvalidModeError(
-                    f'{self.mode} is invalid mode. Provide either `d`(default) or `e`.')
+                raise self.InvalidModeError(
+                    f'{self._mode} is invalid mode. '
+                    'Provide either `d`(default) or `e`.'
+                )
 
-    def __replace__(self) -> None:
-        """Replace delimiters in file paths.
-
-        Returns:
-            None
-        """
-        self.__output__(f'Target extension is `{self.extension}`')
-
-        if not self.paths:
-            self.__output__(
-                f'========== [{
-                    self.exec_mode}] No `{
-                    self.extension}` files found ==========')
+    def replace(self) -> None:
+        self._output(f'Target extension is `{self._extension}`')
+        if not self._paths:
+            self._announce_empty()
             return
-
-        self.__output__(
-            f'========== [{self.exec_mode}] Total File Count to Clean: {len(self.paths)} ==========')
-        self.__output__(
-            f'========== [{
-                self.exec_mode}] The delimiters of those files will be replaced with `{
-                self.delimiter}` ==========')
-        self.__output__(f'========== [{self.exec_mode}] Start! ==========')
-
-        for before, after in self.file_conversion_map.items():
-            self.__output__(
-                f'========== [{
-                    self.exec_mode}] Replacing the delimiter: `{before}` => `{after}` ==========')
-            if self.mode == 'e':
-                if re.search(r'Disc\d{1}/', after):
-                    os.makedirs(os.path.dirname(after), exist_ok=True)
-                if before != after:
-                    shutil.move(before, after)
-
-        self.__output__(f'========== [{self.exec_mode}] Done! ==========')
-        self.__output__(
-            f'========== [{self.exec_mode}] Total Target File Count: {len(self.paths)} ==========')
+        self._announce_start()
+        self._apply_renames()
+        self._announce_finish()
 
     # private
 
-    def __file_conversion_map__(self) -> dict[str, str]:
-        """Generate a mapping of original paths to new paths with updated delimiters.
+    def _announce_empty(self) -> None:
+        self._output(
+            f'========== [{self._exec_mode()}] '
+            f'No {self._extension} Remains ==========')
 
-        Returns:
-            dict: A dictionary mapping original file paths to new file paths.
-        """
-        file_conversion_map = {}
-        for path in self.paths:
-            file_conversion_map[path] = self.__after__(path)
+    def _announce_start(self) -> None:
+        self._output(
+            f'========== [{self._exec_mode()}] '
+            f'Total File Count to Clean: {len(self._paths)} ==========')
+        self._output(
+            f'========== [{self._exec_mode()}] '
+            f'The delimiters of those files will be replaced with '
+            f'`{self._delimiter}` =========='
+        )
+        self._output(f'========== [{self._exec_mode()}] Start! ==========')
 
-        return file_conversion_map
+    def _announce_finish(self) -> None:
+        self._output(f'========== [{self._exec_mode()}] Done! ==========')
+        self._output(
+            f'========== [{self._exec_mode()}] '
+            f'Total Target File Count: {len(self._paths)} ==========')
 
-    def __after__(self, path: str) -> str:
-        """Transform a file path by replacing delimiters according to the pattern.
+    def _apply_renames(self) -> None:
+        for before, after in self._file_conversion_map().items():
+            self._output(
+                f'========== [{self._exec_mode()}] '
+                f'Replacing the delimiter: `{before}` => `{after}` ==========')
+            if self._mode == 'e':
+                self._rename(before, after)
 
-        Returns:
-            str: The transformed file path.
-        """
+    def _rename(self, before: str, after: str) -> None:
+        if re.search(r'Disc\d/', after):
+            os.makedirs(os.path.dirname(after), exist_ok=True)
+        if before != after:
+            shutil.move(before, after)
+
+    def _file_conversion_map(self) -> dict[str, str]:
+        if not hasattr(self, '_cached_conversion_map'):
+            self._cached_conversion_map = {
+                path: self._after(path) for path in self._paths
+            }
+        return self._cached_conversion_map
+
+    def _after(self, path: str) -> str:
         elements = path.split('/')
-        old_filename = elements[-1]
-
-        if re.match(r'^\d-', old_filename):
-            new_filename = re.sub(
-                r'(?P<disc_number>Disc\d)/(?P<track_number>\d{2})\s',
-                rf'\g<disc_number>/\g<track_number>{self.delimiter}',
-                re.sub(r'^(?P<disc_number>\d)-', r'Disc\g<disc_number>/', old_filename)
-            )
-        else:
-            new_filename = re.sub(
-                r'(?P<track_number>\d{2})\s',
-                rf'\g<track_number>{self.delimiter}',
-                old_filename
-            )
-
-        elements[-1] = new_filename
-
+        elements[-1] = self._rewrite_filename(elements[-1])
         return '/'.join(elements)
 
-    def __exec_mode__(self) -> str:
-        """Determine the execution mode string for output messages.
+    def _rewrite_filename(self, filename: str) -> str:
+        if not re.match(r'^\d-', filename):
+            return re.sub(
+                r'(?P<track_number>\d{2})\s',
+                rf'\g<track_number>{self._delimiter}',
+                filename,
+            )
+        return re.sub(
+            r'(?P<disc_number>Disc\d)/(?P<track_number>\d{2})\s',
+            rf'\g<disc_number>/\g<track_number>{self._delimiter}',
+            re.sub(
+                r'^(?P<disc_number>\d)-',
+                r'Disc\g<disc_number>/',
+                filename,
+            ),
+        )
 
-        Returns:
-            str: Either 'EXECUTION' or 'DRY RUN'.
-        """
-        return 'EXECUTION' if self.mode == 'e' else 'DRY RUN'
+    def _exec_mode(self) -> str:
+        return 'EXECUTION' if self._mode == 'e' else 'DRY RUN'
 
-    def __is_test_env__(self) -> bool:
-        """Check if running in a test environment.
+    def _test_env(self) -> bool:
+        stack = inspect.stack()
+        if not stack:
+            return False
+        return 'pytest' in os.path.basename(stack[-1].filename)
 
-        Returns:
-            bool: True if in test environment, False otherwise.
-        """
-        return self.env == 'test'
-
-    def __output__(self, message: str) -> None:
-        """Output a message if not running in the test environment.
-
-        Args:
-            message: The message to output.
-
-        Returns:
-            None
-        """
-        if not self.__is_test_env__():
+    def _output(self, message: str) -> None:
+        if not self._test_env():
             print(message)
